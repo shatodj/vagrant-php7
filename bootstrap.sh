@@ -7,6 +7,9 @@ Update () {
 }
 Update
 
+echo "-- Fix locales"
+export LC_ALL="en_US.UTF-8"
+
 echo "-- Prepare configuration for MySQL --"
 sudo debconf-set-selections <<< "mysql-server mysql-server/root_password password root"
 sudo debconf-set-selections <<< "mysql-server mysql-server/root_password_again password root"
@@ -15,15 +18,16 @@ echo "-- Install tools and helpers --"
 sudo apt-get install -y --force-yes python-software-properties vim htop curl git npm
 
 echo "-- Install PPA's --"
+sudo add-apt-repository ppa:ondrej/apache2
 sudo add-apt-repository ppa:ondrej/php
 sudo add-apt-repository ppa:chris-lea/redis-server
 Update
 
 echo "-- Install NodeJS --"
-curl -sL https://deb.nodesource.com/setup_5.x | sudo -E bash -
+curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
 
 echo "-- Install packages --"
-sudo apt-get install -y --force-yes apache2 mysql-server-5.6 git-core nodejs rabbitmq-server redis-server
+sudo apt-get install -y --force-yes apache2 mysql-server-5.7 git-core nodejs rabbitmq-server redis-server
 sudo apt-get install -y --force-yes php7.0-common php7.0-dev php7.0-json php7.0-opcache php7.0-cli libapache2-mod-php7.0 php7.0 php7.0-mysql php7.0-fpm php7.0-curl php7.0-gd php7.0-mcrypt php7.0-mbstring php7.0-bcmath php7.0-zip
 Update
 
@@ -41,12 +45,12 @@ cat << EOF | sudo tee -a /etc/apache2/sites-available/default.conf
 
 <VirtualHost *:80>
     DocumentRoot /var/www/app
-    ServerName app.dev
+    ServerName app.local
 </VirtualHost>
 
 <VirtualHost *:80>
     DocumentRoot /var/www/phpmyadmin
-    ServerName phpmyadmin.dev
+    ServerName phpmyadmin.local
 </VirtualHost>
 EOF
 sudo a2ensite default.conf
